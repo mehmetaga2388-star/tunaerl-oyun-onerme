@@ -851,7 +851,7 @@
     try {
       const credential = await signInAnonymously(auth);
       currentUser = credential.user;
-
+      console.log("YÖNETİCİ UID:", currentUser.uid);
       onValue(
         ref(db, "suggestions"),
         snapshot => {
