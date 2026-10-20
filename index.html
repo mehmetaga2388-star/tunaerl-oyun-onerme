@@ -624,6 +624,23 @@
             item.appendChild(date);
           }
 
+          if (
+            currentUser &&
+            (currentUser.uid === ADMIN_UID ||
+             currentUser.uid === entry.ownerUid)
+          ) {
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "delete-btn";
+            deleteButton.textContent = "Sil";
+
+            deleteButton.addEventListener("click", () => {
+              deleteSuggestion(entry.ownerUid, entry.entryId);
+            });
+
+            item.appendChild(deleteButton);
+          }
+
           card.appendChild(item);
         }
 
