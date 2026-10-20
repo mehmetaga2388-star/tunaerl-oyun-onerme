@@ -490,6 +490,29 @@
         dateStyle: "short",
         timeStyle: "short"
       });
+      
+    async function deleteSuggestion(ownerUid, entryId) {
+      if (!currentUser) return;
+
+      const isAdmin = currentUser.uid === ADMIN_UID;
+      const isOwner = currentUser.uid === ownerUid;
+
+      if (!isAdmin && !isOwner) {
+        showNotice("Bu öneriyi silme yetkin yok.", "error");
+        return;
+      }
+
+      if (!confirm("Bu öneriyi silmek istediğine emin misin?")) return;
+
+      try {
+        await remove(ref(db, `suggestions/${ownerUid}/${entryId}`));
+        showNotice("Öneri silindi.", "success");
+      } catch (error) {
+        console.error("Silme hatası:", error);
+        showNotice("Silinemedi: " + error.message, "error");
+      }
+    }
+
     }
 
     function render() {
