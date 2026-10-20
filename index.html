@@ -890,12 +890,17 @@
                 typeof item.game === "string" &&
                 typeof item.person === "string"
               ) {
-                entries.push({
-                  game: item.game,
-                  person: item.person,
-                  note: typeof item.note === "string" ? item.note : "",
-                  createdAt: item.createdAt || "",
-                  createdAtMs: Number(item.createdAtMs) || 0
+                
+entries.push({
+  game: item.game,
+  person: item.person,
+  note: typeof item.note === "string" ? item.note : "",
+  createdAt: item.createdAt || "",
+  createdAtMs: Number(item.createdAtMs) || 0,
+  ownerUid: userSnapshot.key,
+  entryId: entrySnapshot.key
+});
+
                 });
               }
             });
