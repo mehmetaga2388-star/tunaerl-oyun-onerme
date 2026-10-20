@@ -74,9 +74,9 @@ const starterGames = [
 ];
 const $ = id => document.getElementById(id);
 let entries = [];
-try { entries = JSON.parse(localStorage.getItem("tunaerl-game-suggestions") || "[]"); if(!Array.isArray(entries)) entries=[]; } catch(e) { entries=[]; }
+let entries = [];
 let chosen = "";
-function save(){ localStorage.setItem("tunaerl-game-suggestions", JSON.stringify(entries)); }
+function save(){}
 let searchTimer=null, searchRequest=0;
 async function showSuggestions(){
   const raw=$("gameInput").value.trim();
