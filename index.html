@@ -508,12 +508,10 @@
       try {
         await remove(ref(db, `suggestions/${ownerUid}/${entryId}`));
         showNotice("Öneri silindi.", "success");
-      } catch (error) {
+           } catch (error) {
         console.error("Silme hatası:", error);
         showNotice("Silinemedi: " + error.message, "error");
       }
-    }
-
     }
 
     function render() {
