@@ -66,6 +66,36 @@ button{border:0;border-radius:12px;padding:14px 18px;font-weight:800;font-size:1
   <div class="footer">TUNAERL OYUN ÖNERME · Steam mağazasında canlı arama · Öneriler bu tarayıcıda saklanır.</div>
 </div>
 <script type="module">
+  
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAYTLr_9O7buUPhXKqlrQfarsxpmuZQdiE",
+  authDomain: "tunaerl-oyun-onerme.firebaseapp.com",
+  databaseURL: "https://tunaerl-oyun-onerme-default-rtdb.firebaseio.com",
+  projectId: "tunaerl-oyun-onerme",
+  storageBucket: "tunaerl-oyun-onerme.firebasestorage.app",
+  messagingSenderId: "301064865575",
+  appId: "1:301064865575:web:573d12462c457697e84b02",
+  measurementId: "G-QJ92DT2EYS"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+let currentUser = null;
+
+signInAnonymously(auth)
+  .then(({ user }) => {
+    currentUser = user;
+    console.log("Firebase bağlantısı hazır!");
+  })
+  .catch(error => {
+    console.error("Firebase bağlantı hatası:", error);
+  });
+
 const starterGames = [
   "Minecraft","Grand Theft Auto V","R.E.P.O.","Lethal Company","Euro Truck Simulator 2",
   "Content Warning","Phasmophobia","Terraria","Stardew Valley","The Sims 4",
