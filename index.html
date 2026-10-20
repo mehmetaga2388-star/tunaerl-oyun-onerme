@@ -819,12 +819,12 @@
         const userEntriesRef = ref(db, "suggestions/" + currentUser.uid);
         const newEntryRef = push(userEntriesRef);
 
-        await set(newEntryRef, {
-          game,
-          person,
-          note,
-          createdAt: new Date().toISOString(),
-          createdAtMs: Date.now()
+       await set(newEntryRef, {
+  game,
+  person,
+  note,
+  createdAt: new Date().toISOString()
+         
         });
 
         $("gameInput").value = "";
