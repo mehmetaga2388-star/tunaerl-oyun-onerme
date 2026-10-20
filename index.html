@@ -192,21 +192,47 @@ function render(){
     detail.textContent="Önerenler: "+g.entries.map(e=>e.person+(e.note?" — "+e.note:"")).join(" · ");
     const count=document.createElement("div");count.className="count";count.innerHTML='<span>'+g.entries.length+'</span><small>öneri</small>';
     info.append(title,detail);card.append(rank,info,count);list.appendChild(card);
-  });
-}
-$("gameInput").addEventListener("input",()=>{chosen="";clearTimeout(searchTimer);searchTimer=setTimeout(showSuggestions,280);});
-$("gameInput").addEventListener("focus",()=>{if($("gameInput").value.trim())showSuggestions();});
-document.addEventListener("click",e=>{if(!e.target.closest("#gameInput")&&!e.target.closest("#suggestions"))$("suggestions").style.display="none";});
-$("filterInput").addEventListener("input",render);
-$("suggestForm").addEventListener("submit",e=>{
+ 
+$("suggestForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const game=$("gameInput").value.trim(), person=$("personInput").value.trim(), note=$("noteInput").value.trim();
-  if(!game||!person)return;
-  entries.push({game,person,note,createdAt:new Date().toISOString()});save();render();
-  $("notice").textContent=game+" önerisi kaydedildi!";
-  $("gameInput").value="";$("personInput").value="";$("noteInput").value="";chosen="";$("suggestions").style.display="none";
-  setTimeout(()=>{$("notice").textContent="";},3000);
+
+  const game = $("gameInput").value.trim();
+  const person = $("personInput").value.trim();
+  const note = $("noteInput").value.trim();
+
+  if (!game || !person) return;
+
+  if (!currentUser) {
+    $("notice").textContent = "Bağlantı hazırlanıyor, tekrar dene.";
+    return;
+  }
+
+  try {
+    const newEntry = push(ref(db, "suggestions/" + currentUser.uid));
+
+    await set(newEntry, {
+      game,
+      person,
+      note,
+      createdAt: new Date().toISOString()
+    });
+
+    $("notice").textContent = game + " önerisi kaydedildi!";
+    $("gameInput").value = "";
+    $("personInput").value = "";
+    $("noteInput").value = "";
+    chosen = "";
+    $("suggestions").style.display = "none";
+
+    setTimeout(() => {
+      $("notice").textContent = "";
+    }, 3000);
+  } catch (error) {
+    console.error("Kaydetme hatası:", error);
+    $("notice").textContent = "Kaydedilemedi. Firebase ayarlarını kontrol et.";
+  }
 });
+
 render();
 </script>
 </body>
