@@ -87,13 +87,35 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 let currentUser = null;
 
+
 signInAnonymously(auth)
   .then(({ user }) => {
     currentUser = user;
-    console.log("Firebase bağlantısı hazır!");
+
+    onValue(ref(db, "suggestions"), snapshot => {
+      entries = [];
+
+      snapshot.forEach(userSnapshot => {
+        userSnapshot.forEach(entrySnapshot => {
+          const item = entrySnapshot.val();
+
+          if (item && typeof item.game === "string" &&
+              typeof item.person === "string") {
+            entries.push(item);
+          }
+        });
+      });
+
+      render();
+    }, error => {
+      console.error("Öneriler yüklenemedi:", error);
+    });
   })
   .catch(error => {
     console.error("Firebase bağlantı hatası:", error);
+    $("notice").textContent = "Bağlantı kurulamadı. Sayfayı yenile.";
+  });
+
   });
 
 const starterGames = [
