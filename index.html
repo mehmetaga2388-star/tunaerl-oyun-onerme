@@ -1,418 +1,88 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tunaerl Oyun Önerme</title>
-  <meta name="description" content="Oyun önerilerini paylaş, yeni oyunlar keşfet.">
-
+  <meta name="description" content="Oyun önerilerini paylaş, oy ver, yorum yap ve yeni oyunlar keşfet.">
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0b0d12;
-      --panel: #141821;
-      --panel2: #1b202b;
-      --text: #f3f4f6;
-      --muted: #a0a7b5;
-      --accent: #7c5cff;
-      --border: #2a3040;
-      --green: #49d99b;
-      --red: #ff7070;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse at top, #211744 0, transparent 42%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    button, input, textarea { font: inherit; }
-
-    .container {
-      width: min(920px, 92%);
-      margin: 0 auto;
-      padding: 42px 0 60px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .logo {
-      display: inline-block;
-      padding: 8px 13px;
-      border: 1px solid #42356e;
-      border-radius: 12px;
-      background: #211a39;
-      color: #c5b7ff;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 14px;
-    }
-
-    h1 {
-      font-size: clamp(30px, 5vw, 46px);
-      margin: 0 0 12px;
-      letter-spacing: -1.5px;
-    }
-
-    h1 span { color: #a795ff; }
-
-    .subtitle {
-      color: var(--muted);
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .status {
-      display: inline-block;
-      margin-top: 15px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background: #777;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-
-    .dot.online { background: var(--green); }
-
-    .panel {
-      background: rgba(20, 24, 33, .96);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 22px;
-      box-shadow: 0 12px 40px #00000018;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin: 0 0 7px;
-    }
-
-    .description {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0 0 20px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: #d8dbea;
-      margin: 16px 0 8px;
-    }
-
-    input, textarea {
-      display: block;
-      width: 100%;
-      background: #0d1017;
-      border: 1px solid #303747;
-      border-radius: 10px;
-      color: var(--text);
-      padding: 13px 14px;
-      outline: none;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px #7c5cff20;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .game-wrap { position: relative; }
-
-    .suggestions {
-      display: none;
-      position: absolute;
-      z-index: 20;
-      top: calc(100% + 5px);
-      left: 0;
-      right: 0;
-      max-height: 260px;
-      overflow-y: auto;
-      padding: 5px;
-      border: 1px solid #363d50;
-      background: #11151e;
-      border-radius: 10px;
-      box-shadow: 0 12px 30px #0008;
-    }
-
-    .suggestions button {
-      display: block;
-      width: 100%;
-      padding: 11px;
-      border: 0;
-      border-radius: 7px;
-      color: var(--text);
-      text-align: left;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .suggestions button:hover:not(:disabled) {
-      background: #28223f;
-    }
-
-    .suggestions button:disabled {
-      color: var(--muted);
-      cursor: default;
-    }
-
-    .primary {
-      width: 100%;
-      margin-top: 18px;
-      padding: 14px;
-      border: 0;
-      border-radius: 10px;
-      color: white;
-      background: linear-gradient(110deg, #7655f6, #9a5af5);
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
-
-    .primary:hover { opacity: .88; }
-    .primary:disabled { opacity: .5; cursor: wait; }
-
-    .notice {
-      display: none;
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 9px;
-      font-size: 13px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .notice.show { display: block; }
-    .notice.success { color: #a8f4d1; background: #123329; }
-    .notice.error { color: #ffc0c0; background: #381c25; }
-    .notice.info { color: #d3caff; background: #241e3d; }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 18px 0;
-    }
-
-    .toolbar input { flex: 1 1 220px; }
-
-    .count {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 12px 0 18px;
-    }
-
-    .game-card {
-      background: #10141c;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 17px;
-      margin-bottom: 12px;
-    }
-
-    .game-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .game-name {
-      font-size: 17px;
-      font-weight: bold;
-      overflow-wrap: anywhere;
-    }
-
-    .game-count {
-      white-space: nowrap;
-      color: #c5b7ff;
-      background: #282044;
-      padding: 6px 9px;
-      border-radius: 8px;
-      font-size: 12px;
-    }
-
-    .entry {
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #272c38;
-    }
-
-    .person {
-      color: #c3b4ff;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .note {
-      color: #c5cad5;
-      font-size: 13px;
-      line-height: 1.6;
-      margin: 7px 0 0;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-
-    .date {
-      display: block;
-      margin-top: 7px;
-      color: #858d9d;
-      font-size: 11px;
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 30px 12px;
-      border: 1px dashed #363d4b;
-      border-radius: 12px;
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      color: #777f90;
-      font-size: 12px;
-      line-height: 1.8;
-      margin-top: 28px;
-    }
-
-    @media (max-width: 560px) {
-      .container { padding-top: 28px; }
-      .panel { padding: 17px; }
-      .game-top { align-items: flex-start; }
-    }
+    :root{color-scheme:dark;--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--text:#f3f4f6;--muted:#a0a7b5;--accent:#7c5cff;--border:#2a3040;--green:#49d99b;--red:#ff7070}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#211744 0,transparent 42%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    button,input,textarea{font:inherit}.container{width:min(920px,92%);margin:0 auto;padding:42px 0 60px}header{text-align:center;margin-bottom:28px}
+    .logo{display:inline-block;padding:8px 13px;border:1px solid #42356e;border-radius:12px;background:#211a39;color:#c5b7ff;font-size:12px;font-weight:bold;letter-spacing:2px;margin-bottom:14px}
+    h1{font-size:clamp(30px,5vw,46px);margin:0 0 12px;letter-spacing:-1.5px}h1 span{color:#a795ff}.subtitle{color:var(--muted);line-height:1.6;margin:0}
+    .status{display:inline-block;margin-top:15px;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;background:#777;border-radius:50%;margin-right:6px}.dot.online{background:var(--green)}
+    .panel{background:rgba(20,24,33,.96);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:22px;box-shadow:0 12px 40px #00000018}
+    h2{font-size:20px;margin:0 0 7px}.description{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 20px}
+    label{display:block;font-size:13px;color:#d8dbea;margin:16px 0 8px}input,textarea{display:block;width:100%;background:#0d1017;border:1px solid #303747;border-radius:10px;color:var(--text);padding:13px 14px;outline:none}
+    input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #7c5cff20}textarea{resize:vertical;min-height:80px}.game-wrap{position:relative}
+    .suggestions{display:none;position:absolute;z-index:20;top:calc(100% + 5px);left:0;right:0;max-height:260px;overflow-y:auto;padding:5px;border:1px solid #363d50;background:#11151e;border-radius:10px;box-shadow:0 12px 30px #0008}
+    .suggestions button{display:block;width:100%;padding:11px;border:0;border-radius:7px;color:var(--text);text-align:left;background:transparent;cursor:pointer}.suggestions button:hover:not(:disabled){background:#28223f}.suggestions button:disabled{color:var(--muted);cursor:default}
+    .primary,.action-btn{border:0;border-radius:10px;color:white;background:linear-gradient(110deg,#7655f6,#9a5af5);font-weight:bold;cursor:pointer;padding:12px 14px}.primary{width:100%;margin-top:18px;padding:14px}.primary:hover,.action-btn:hover{opacity:.88}.primary:disabled,.action-btn:disabled{opacity:.5;cursor:wait}
+    .notice{display:none;margin-top:14px;padding:12px;border-radius:9px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}.notice.show{display:block}.notice.success{color:#a8f4d1;background:#123329}.notice.error{color:#ffc0c0;background:#381c25}.notice.info{color:#d3caff;background:#241e3d}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.toolbar input{flex:1 1 220px}.count{color:var(--muted);font-size:13px;margin:12px 0 18px}
+    .game-card{background:#10141c;border:1px solid var(--border);border-radius:13px;padding:17px;margin-bottom:12px}.game-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.game-name{font-size:17px;font-weight:bold;overflow-wrap:anywhere}.game-count{white-space:nowrap;color:#c5b7ff;background:#282044;padding:6px 9px;border-radius:8px;font-size:12px}
+    .game-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.action-btn{font-size:12px;padding:9px 12px}.action-btn.secondary{background:#242a38;border:1px solid #3a4254}.action-btn.voted{background:#153a30;color:#9bf0cb;border:1px solid #28664f}
+    .entry{margin-top:14px;padding-top:12px;border-top:1px solid #272c38}.person{color:#c3b4ff;font-size:13px;font-weight:bold;cursor:pointer;text-decoration:underline;text-decoration-color:#6f5bb5;text-underline-offset:3px}
+    .note{color:#c5cad5;font-size:13px;line-height:1.6;margin:7px 0 0;overflow-wrap:anywhere;white-space:pre-wrap}.date{display:block;margin-top:7px;color:#858d9d;font-size:11px}
+    .delete-btn{margin-top:10px;padding:7px 11px;border-radius:8px;border:1px solid #733a46;background:#351b24;color:#ffb7bf;cursor:pointer;font-size:12px}.delete-btn:hover{background:#51232f}
+    .comments{display:none;margin-top:15px;padding-top:14px;border-top:1px solid #272c38}.comments.open{display:block}.comment-list{display:grid;gap:9px;margin:12px 0}.comment{background:#171c27;border:1px solid #2a3040;border-radius:9px;padding:10px}.comment-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.comment-name{color:#c3b4ff;font-weight:bold;font-size:12px;cursor:pointer}.comment-text{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px}.comment-date{font-size:10px;color:#858d9d}.comment-form{display:grid;gap:8px}.comment-form textarea{min-height:65px}.comment-form .action-btn{justify-self:start}
+    .empty{text-align:center;color:var(--muted);padding:30px 12px;border:1px dashed #363d4b;border-radius:12px;line-height:1.6}
+    .profile-box{background:#10141c;border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px}.profile-title{font-size:18px;font-weight:bold;color:#c5b7ff}.profile-meta{color:var(--muted);font-size:12px;margin-top:6px}.profile-section{margin-top:15px}.profile-section h3{font-size:14px;margin:0 0 8px}.profile-list{font-size:13px;color:#c5cad5;line-height:1.7;overflow-wrap:anywhere}
+    footer{text-align:center;color:#777f90;font-size:12px;line-height:1.8;margin-top:28px}
+    @media(max-width:560px){.container{padding-top:28px}.panel{padding:17px}.game-top{align-items:flex-start}.game-count{font-size:11px}}
   </style>
 </head>
-
 <body>
   <main class="container">
     <header>
       <div class="logo">TUNAERL COMMUNITY</div>
       <h1>Oyun <span>Önerme</span></h1>
-      <p class="subtitle">
-        Oynadığın oyunları öner, başkalarının önerilerini keşfet.
-        <br>Eklenen öneriler herkesle paylaşılır.
-      </p>
-      <div class="status">
-        <span class="dot" id="statusDot"></span>
-        <span id="connectionStatus">Veritabanına bağlanılıyor...</span>
-      </div>
+      <p class="subtitle">Oynadığın oyunları öner, başkalarının önerilerini keşfet.<br>Eklenen öneriler herkesle paylaşılır.</p>
+      <div class="status"><span class="dot" id="statusDot"></span><span id="connectionStatus">Veritabanına bağlanılıyor...</span></div>
     </header>
 
     <section class="panel">
       <h2>＋ Oyun öner</h2>
-      <p class="description">
-        Oyunu Steam'den ara veya adını kendin yaz.
-      </p>
-
+      <p class="description">Oyunu Steam'den ara veya adını kendin yaz.</p>
       <form id="suggestionForm">
         <label for="gameInput">Oyun adı</label>
         <div class="game-wrap">
-          <input
-            id="gameInput"
-            type="text"
-            placeholder="Örn. GTA 5, RDR2, Minecraft..."
-            maxlength="100"
-            autocomplete="off"
-            required
-          >
+          <input id="gameInput" type="text" placeholder="Örn. GTA 5, RDR2, Minecraft..." maxlength="100" autocomplete="off" required>
           <div id="suggestions" class="suggestions"></div>
         </div>
-
         <label for="personInput">Adın veya kullanıcı adın</label>
-        <input
-          id="personInput"
-          type="text"
-          placeholder="Örn. Tunaerl"
-          maxlength="40"
-          required
-        >
-
+        <input id="personInput" type="text" placeholder="Örn. Tunaerl" maxlength="40" required>
         <label for="noteInput">Neden öneriyorsun? (İsteğe bağlı)</label>
-        <textarea
-          id="noteInput"
-          placeholder="Oyun hakkında kısa bir yorum yaz..."
-          maxlength="100"
-        ></textarea>
-
-        <button class="primary" id="submitButton" type="submit">
-          Öneriyi paylaş
-        </button>
-
+        <textarea id="noteInput" placeholder="Oyun hakkında kısa bir yorum yaz..." maxlength="100"></textarea>
+        <button class="primary" id="submitButton" type="submit">Öneriyi paylaş</button>
         <div id="notice" class="notice" role="status"></div>
       </form>
     </section>
 
     <section class="panel">
       <h2>🎮 Topluluk önerileri</h2>
-      <p class="description">
-        Burada herkesin eklediği oyunları ve öneri sayılarını görebilirsin.
-      </p>
-
-      <div class="toolbar">
-        <input
-          id="filterInput"
-          type="search"
-          placeholder="Oyun veya kullanıcı ara..."
-          aria-label="Oyun veya kullanıcı ara"
-        >
-      </div>
-
+      <p class="description">Aynı oyun tek kartta toplanır. Oy ver, yorum yap ve profillere bak.</p>
+      <div class="toolbar"><input id="filterInput" type="search" placeholder="Oyun veya kullanıcı ara..." aria-label="Oyun veya kullanıcı ara"></div>
       <div id="totalCount" class="count">Öneriler yükleniyor...</div>
-      <div id="entriesList">
-        <div class="empty">Veriler yükleniyor...</div>
-      </div>
+      <div id="entriesList"><div class="empty">Veriler yükleniyor...</div></div>
     </section>
 
-    <footer>
-      Tunaerl Oyun Önerme<br>
-      Topluluk tarafından paylaşılan oyun önerileri.
-    </footer>
+    <section class="panel" id="profilePanel">
+      <h2>👤 Profiller</h2>
+      <p class="description">Bir kullanıcı adı ara veya oyun kartındaki kullanıcı adına tıkla.</p>
+      <div class="toolbar"><input id="profileSearch" type="search" placeholder="Kullanıcı adı ara..."></div>
+      <div id="profilesList"><div class="empty">Profiller yükleniyor...</div></div>
+    </section>
+
+    <footer>Tunaerl Oyun Önerme<br>Topluluk tarafından paylaşılan oyun önerileri.</footer>
   </main>
 
   <script type="module">
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getDatabase, ref, push, set, remove, onValue, runTransaction, get } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-    import {
-      getAuth,
-      signInAnonymously
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-    import {
-      getDatabase,
-      ref,
-      push,
-      set,
-      remove,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
-
-    // Firebase projenin web uygulaması ayarları
     const firebaseConfig = {
       apiKey: "AIzaSyAYTLr_9O7buUPhXKqlrQfarsxpmuZQdiE",
       authDomain: "tunaerl-oyun-onerme.firebaseapp.com",
@@ -430,518 +100,305 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    let currentUser = null;
-    let entries = [];
-    let searchTimer = null;
-    let searchRequest = 0;
-    let databaseReady = false;
-    let selectedGame = "";
+    let currentUser = null, entries = [], searchTimer = null, searchRequest = 0;
+    let databaseReady = false, votes = {}, comments = {}, profiles = {};
+    const openComments = new Set();
 
     const starterGames = [
-      "Grand Theft Auto V",
-      "Grand Theft Auto V Enhanced",
-      "Red Dead Redemption 2",
-      "Counter-Strike 2",
-      "PUBG: BATTLEGROUNDS",
-      "Minecraft",
-      "Cyberpunk 2077",
-      "Elden Ring",
-      "Euro Truck Simulator 2",
-      "The Witcher 3: Wild Hunt",
-      "Stardew Valley",
-      "Terraria",
-      "Rust",
-      "Lethal Company",
-      "Phasmophobia",
-      "Forza Horizon 5",
-      "Detroit: Become Human",
-      "The Forest",
-      "Sons Of The Forest",
-      "Portal 2",
-      "Left 4 Dead 2",
-      "Schedule I",
-      "Content Warning",
-      "Among Us",
-      "BeamNG.drive"
+      "Grand Theft Auto V","Grand Theft Auto V Enhanced","Red Dead Redemption 2","Counter-Strike 2",
+      "PUBG: BATTLEGROUNDS","Minecraft","Cyberpunk 2077","Elden Ring","Euro Truck Simulator 2",
+      "The Witcher 3: Wild Hunt","Stardew Valley","Terraria","Rust","Lethal Company","Phasmophobia",
+      "Forza Horizon 5","Detroit: Become Human","The Forest","Sons Of The Forest","Portal 2",
+      "Left 4 Dead 2","Schedule I","Content Warning","Among Us","BeamNG.drive"
     ];
 
-    function setStatus(message, online = false) {
+    function setStatus(message, online=false) {
       $("connectionStatus").textContent = message;
       $("statusDot").classList.toggle("online", online);
     }
-
-    function showNotice(message, type = "info") {
-      const notice = $("notice");
-      notice.textContent = message;
-      notice.className = "notice show " + type;
+    function showNotice(message, type="info") {
+      const n=$("notice"); n.textContent=message; n.className="notice show "+type;
     }
-
-    function normalize(value) {
-      return String(value || "").trim().toLocaleLowerCase("tr");
+    function normalize(value) { return String(value||"").trim().toLocaleLowerCase("tr"); }
+    function gameKey(value) {
+      return normalize(value).normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/ı/g,"i").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,100) || "oyun";
     }
-
     function formatDate(value) {
-      if (!value) return "";
-
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "";
-
-                  return date.toLocaleString("tr-TR", {
-        dateStyle: "short",
-        timeStyle: "short"
-      });
+      if(!value) return "";
+      const d=new Date(value);
+      return Number.isNaN(d.getTime()) ? "" : d.toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"});
+    }
+    function safeText(value) { return String(value ?? ""); }
+    function makeButton(text, className, handler) {
+      const b=document.createElement("button"); b.type="button"; b.className=className; b.textContent=text;
+      b.addEventListener("click",handler); return b;
+    }
+    async function deleteSuggestion(ownerUid, entryId) {
+      if(!currentUser) return;
+      if(currentUser.uid!==ADMIN_UID && currentUser.uid!==ownerUid) {
+        showNotice("Bu öneriyi silme yetkin yok.","error"); return;
+      }
+      if(!confirm("Bu öneriyi silmek istediğine emin misin?")) return;
+      try { await remove(ref(db,`suggestions/${ownerUid}/${entryId}`)); showNotice("Öneri silindi.","success"); }
+      catch(error) { console.error("Silme hatası:",error); showNotice("Silinemedi: "+error.message,"error"); }
     }
 
-    async function deleteSuggestion(ownerUid, entryId) {
-      if (!currentUser) return;
-
-      const isAdmin = currentUser.uid === ADMIN_UID;
-      const isOwner = currentUser.uid === ownerUid;
-
-      if (!isAdmin && !isOwner) {
-        showNotice("Bu öneriyi silme yetkin yok.", "error");
-        return;
-      }
-
-      if (!confirm("Bu öneriyi silmek istediğine emin misin?")) return;
-
+    async function voteForGame(game) {
+      if(!currentUser) return;
+      const key=gameKey(game), voteRef=ref(db,`gameVotes/${key}/${currentUser.uid}`);
       try {
-        await remove(ref(db, `suggestions/${ownerUid}/${entryId}`));
-        showNotice("Öneri silindi.", "success");
-           } catch (error) {
-        console.error("Silme hatası:", error);
-        showNotice("Silinemedi: " + error.message, "error");
+        const snap=await get(voteRef);
+        if(snap.exists()) { showNotice("Bu oyuna zaten oy vermişsin.","info"); return; }
+        await set(voteRef,{uid:currentUser.uid,game,createdAt:new Date().toISOString()});
+        showNotice(`${game} için oyun kaydedildi!`,"success");
+      } catch(error) { console.error("Oy verme hatası:",error); showNotice("Oy verilemedi: "+error.message,"error"); }
+    }
+
+    async function submitComment(game, textValue) {
+      const text=textValue.trim();
+      if(!currentUser || !text) return;
+      if(text.length>500) { showNotice("Yorum en fazla 500 karakter olabilir.","error"); return; }
+      try {
+        const profileSnap=await get(ref(db,`profiles/${currentUser.uid}`));
+        const person=(profileSnap.val() && profileSnap.val().name) || $("personInput").value.trim() || "Anonim";
+        const commentRef=push(ref(db,`gameComments/${gameKey(game)}`));
+        await set(commentRef,{uid:currentUser.uid,person,text,game,createdAt:new Date().toISOString()});
+        showNotice("Yorumun eklendi.","success");
+      } catch(error) { console.error("Yorum ekleme hatası:",error); showNotice("Yorum eklenemedi: "+error.message,"error"); }
+    }
+
+    function openProfile(uid, fallbackName="Kullanıcı") {
+      const profile=profiles[uid] || {};
+      const userEntries=entries.filter(e=>e.ownerUid===uid);
+      const userComments=Object.values(comments).flatMap(list=>Object.values(list||{}))
+        .filter(c=>c && c.uid===uid);
+      const votedGames=Object.entries(votes).filter(([key,items])=>items && items[uid])
+        .map(([key])=>key.replace(/-/g," "));
+      const box=document.createElement("div"); box.className="profile-box";
+      const title=document.createElement("div"); title.className="profile-title";
+      title.textContent=profile.name || userEntries[0]?.person || userComments[0]?.person || fallbackName;
+      box.appendChild(title);
+      const meta=document.createElement("div"); meta.className="profile-meta";
+      meta.textContent=`${userEntries.length} öneri · ${userComments.length} yorum · ${votedGames.length} farklı oy`;
+      box.appendChild(meta);
+      const addSection=(heading,lines)=>{
+        const section=document.createElement("div"); section.className="profile-section";
+        const h=document.createElement("h3"); h.textContent=heading; section.appendChild(h);
+        const p=document.createElement("div"); p.className="profile-list";
+        p.textContent=lines.length ? lines.join(" · ") : "Henüz yok";
+        section.appendChild(p); box.appendChild(section);
+      };
+      addSection("Önerdiği oyunlar",userEntries.map(e=>e.game));
+      addSection("Oy verdiği oyunlar",votedGames);
+      addSection("Yorumları",userComments.map(c=>`${c.game}: ${c.text}`));
+      $("profilesList").replaceChildren(box);
+      $("profilePanel").scrollIntoView({behavior:"smooth",block:"start"});
+    }
+
+    function renderProfiles() {
+      const query=normalize($("profileSearch").value), byUid=new Map();
+      for(const e of entries) {
+        if(!byUid.has(e.ownerUid)) byUid.set(e.ownerUid,{uid:e.ownerUid,name:(profiles[e.ownerUid]||{}).name||e.person||"Anonim"});
+      }
+      for(const list of Object.values(comments)) for(const c of Object.values(list||{})) {
+        if(c && c.uid && !byUid.has(c.uid)) byUid.set(c.uid,{uid:c.uid,name:(profiles[c.uid]||{}).name||c.person||"Anonim"});
+      }
+      for(const [uid,p] of Object.entries(profiles)) if(!byUid.has(uid)) byUid.set(uid,{uid,name:p.name||"Anonim"});
+      const list=$("profilesList"); list.replaceChildren();
+      const found=[...byUid.values()].filter(p=>normalize(p.name).includes(query)).sort((a,b)=>a.name.localeCompare(b.name,"tr"));
+      if(!found.length) { const empty=document.createElement("div"); empty.className="empty"; empty.textContent="Eşleşen profil bulunamadı."; list.appendChild(empty); return; }
+      for(const p of found) {
+        const b=makeButton(p.name,"action-btn secondary",()=>openProfile(p.uid,p.name));
+        b.style.margin="0 7px 7px 0"; list.appendChild(b);
       }
     }
 
     function render() {
-      const query = normalize($("filterInput").value);
-      const groups = new Map();
-
-      for (const entry of entries) {
-        const game = String(entry.game || "").trim();
-        if (!game) continue;
-
-        const key = normalize(game);
-
-        if (!groups.has(key)) {
-          groups.set(key, {
-            name: game,
-            entries: []
-          });
-        }
-
+      const query=normalize($("filterInput").value), groups=new Map();
+      for(const entry of entries) {
+        const game=String(entry.game||"").trim(); if(!game) continue;
+        const key=normalize(game);
+        if(!groups.has(key)) groups.set(key,{name:game,entries:[]});
         groups.get(key).entries.push(entry);
       }
-
-      let games = [...groups.values()];
-
-      games.sort((a, b) =>
-        b.entries.length - a.entries.length ||
-        a.name.localeCompare(b.name, "tr")
-      );
-
-      if (query) {
-        games = games.filter(group =>
-          normalize(group.name).includes(query) ||
-          group.entries.some(entry =>
-            normalize(entry.person).includes(query) ||
-            normalize(entry.note).includes(query)
-          )
-        );
+      let games=[...groups.values()].sort((a,b)=>b.entries.length-a.entries.length||a.name.localeCompare(b.name,"tr"));
+      if(query) games=games.filter(g=>normalize(g.name).includes(query)||g.entries.some(e=>normalize(e.person).includes(query)||normalize(e.note).includes(query)));
+      $("totalCount").textContent=`${games.length} farklı oyun · ${entries.length} toplam öneri`;
+      const list=$("entriesList"); list.replaceChildren();
+      if(!databaseReady || !games.length) {
+        const empty=document.createElement("div"); empty.className="empty";
+        empty.textContent=!databaseReady?"Veritabanı bekleniyor...":(query?"Aramana uygun öneri bulunamadı.":"Henüz öneri yok. İlk oyunu sen öner!");
+        list.appendChild(empty); return;
       }
+      for(const group of games) {
+        const card=document.createElement("article"); card.className="game-card";
+        const top=document.createElement("div"); top.className="game-top";
+        const name=document.createElement("div"); name.className="game-name"; name.textContent=group.name;
+        const gameVoteData=votes[gameKey(group.name)]||{};
+        const count=document.createElement("div"); count.className="game-count";
+        count.textContent=`${Object.keys(gameVoteData).length} oy · ${group.entries.length} öneri`;
+        top.append(name,count); card.appendChild(top);
+        const actions=document.createElement("div"); actions.className="game-actions";
+        const alreadyVoted=!!(currentUser && gameVoteData[currentUser.uid]);
+        const voteBtn=makeButton(alreadyVoted?"✓ Oy verdin":"👍 Oy ver","action-btn"+(alreadyVoted?" voted":""),()=>voteForGame(group.name));
+        voteBtn.disabled=alreadyVoted || !currentUser; actions.appendChild(voteBtn);
+        const commentBtn=makeButton(openComments.has(gameKey(group.name))?"Yorumları gizle":"💬 Yorum yap / gör","action-btn secondary",()=>{
+          const key=gameKey(group.name); openComments.has(key)?openComments.delete(key):openComments.add(key); render();
+        });
+        actions.appendChild(commentBtn); card.appendChild(actions);
 
-      $("totalCount").textContent =
-        `${games.length} farklı oyun · ${entries.length} toplam öneri`;
-
-      const list = $("entriesList");
-      list.replaceChildren();
-
-      if (!databaseReady) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Veritabanı bekleniyor...";
-        list.appendChild(empty);
-        return;
-      }
-
-      if (games.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = query
-          ? "Aramana uygun öneri bulunamadı."
-          : "Henüz öneri yok. İlk oyunu sen öner!";
-        list.appendChild(empty);
-        return;
-      }
-
-      for (const group of games) {
-        const card = document.createElement("article");
-        card.className = "game-card";
-
-        const top = document.createElement("div");
-        top.className = "game-top";
-
-        const name = document.createElement("div");
-        name.className = "game-name";
-        name.textContent = group.name;
-
-        const count = document.createElement("div");
-        count.className = "game-count";
-        count.textContent = `${group.entries.length} öneri`;
-
-        top.append(name, count);
-        card.appendChild(top);
-
-        const sortedEntries = [...group.entries].sort(
-          (a, b) => (Number(b.createdAtMs) || 0) -
-                    (Number(a.createdAtMs) || 0)
-        );
-
-        for (const entry of sortedEntries) {
-          const item = document.createElement("div");
-          item.className = "entry";
-
-          const person = document.createElement("div");
-          person.className = "person";
-          person.textContent = "👤 " + (entry.person || "Anonim");
-
-          item.appendChild(person);
-
-          if (entry.note) {
-            const note = document.createElement("p");
-            note.className = "note";
-            note.textContent = entry.note;
-            item.appendChild(note);
+        const sorted=[...group.entries].sort((a,b)=>(Number(b.createdAtMs)||new Date(b.createdAt||0).getTime()||0)-(Number(a.createdAtMs)||new Date(a.createdAt||0).getTime()||0));
+        for(const entry of sorted) {
+          const item=document.createElement("div"); item.className="entry";
+          const person=makeButton("👤 "+(entry.person||"Anonim"),"person",()=>openProfile(entry.ownerUid,entry.person||"Anonim"));
+          person.style.background="none"; person.style.border="0"; person.style.padding="0"; item.appendChild(person);
+          if(entry.note) { const note=document.createElement("p"); note.className="note"; note.textContent=entry.note; item.appendChild(note); }
+          const dateText=formatDate(entry.createdAt);
+          if(dateText) { const date=document.createElement("span"); date.className="date"; date.textContent=dateText; item.appendChild(date); }
+          if(currentUser && (currentUser.uid===ADMIN_UID || currentUser.uid===entry.ownerUid)) {
+            item.appendChild(makeButton("Sil","delete-btn",()=>deleteSuggestion(entry.ownerUid,entry.entryId)));
           }
-
-          const dateText = formatDate(entry.createdAt);
-          if (dateText) {
-            const date = document.createElement("span");
-            date.className = "date";
-            date.textContent = dateText;
-            item.appendChild(date);
-          }
-
-          if (
-            currentUser &&
-            (currentUser.uid === ADMIN_UID ||
-             currentUser.uid === entry.ownerUid)
-          ) {
-            const deleteButton = document.createElement("button");
-            deleteButton.type = "button";
-            deleteButton.className = "delete-btn";
-            deleteButton.textContent = "Sil";
-
-            deleteButton.addEventListener("click", () => {
-              deleteSuggestion(entry.ownerUid, entry.entryId);
-            });
-
-            item.appendChild(deleteButton);
-          }
-
           card.appendChild(item);
         }
 
+        const commentSection=document.createElement("div"); commentSection.className="comments"+(openComments.has(gameKey(group.name))?" open":"");
+        const commentList=document.createElement("div"); commentList.className="comment-list";
+        const gameComments=Object.values(comments[gameKey(group.name)]||{}).filter(c=>c && typeof c.text==="string")
+          .sort((a,b)=>new Date(a.createdAt||0)-new Date(b.createdAt||0));
+        if(!gameComments.length) { const empty=document.createElement("div"); empty.className="profile-meta"; empty.textContent="Henüz yorum yok. İlk yorumu sen yaz!"; commentList.appendChild(empty); }
+        for(const c of gameComments) {
+          const cbox=document.createElement("div"); cbox.className="comment";
+          const head=document.createElement("div"); head.className="comment-head";
+          const cname=makeButton(c.person||"Anonim","comment-name",()=>openProfile(c.uid,c.person||"Anonim"));
+          cname.style.background="none"; cname.style.border="0"; cname.style.padding="0";
+          const when=document.createElement("span"); when.className="comment-date"; when.textContent=formatDate(c.createdAt);
+          head.append(cname,when); cbox.append(head);
+          const txt=document.createElement("div"); txt.className="comment-text"; txt.textContent=c.text; cbox.appendChild(txt);
+          if(currentUser && (currentUser.uid===c.uid || currentUser.uid===ADMIN_UID)) {
+            cbox.appendChild(makeButton("Yorumu sil","delete-btn",async()=>{
+              if(!confirm("Bu yorumu silmek istiyor musun?")) return;
+              try { await remove(ref(db,`gameComments/${gameKey(group.name)}/${c.id}`)); showNotice("Yorum silindi.","success"); }
+              catch(error) { showNotice("Yorum silinemedi: "+error.message,"error"); }
+            }));
+          }
+          commentList.appendChild(cbox);
+        }
+        commentSection.appendChild(commentList);
+        const form=document.createElement("form"); form.className="comment-form";
+        const area=document.createElement("textarea"); area.maxLength=500; area.placeholder="Bu oyun hakkında yorum yaz..."; area.required=true;
+        const submit=makeButton("Yorumu gönder","action-btn",()=>{});
+        submit.type="submit";
+        form.append(area,submit);
+        form.addEventListener("submit",async event=>{
+          event.preventDefault(); submit.disabled=true;
+          await submitComment(group.name,area.value); area.value=""; submit.disabled=false;
+        });
+        commentSection.appendChild(form); card.appendChild(commentSection);
         list.appendChild(card);
       }
     }
 
-    function addChoice(box, name, onChoose, disabled = false) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = name;
-      button.disabled = disabled;
-
-      if (!disabled) {
-        button.addEventListener("click", () => onChoose(name));
-      }
-
-      box.appendChild(button);
+    function addChoice(box,name,onChoose,disabled=false) {
+      const button=document.createElement("button"); button.type="button"; button.textContent=name; button.disabled=disabled;
+      if(!disabled) button.addEventListener("click",()=>onChoose(name)); box.appendChild(button);
     }
-
-    function chooseGame(name) {
-      $("gameInput").value = name;
-      selectedGame = name;
-      $("suggestions").style.display = "none";
-      $("gameInput").focus();
-    }
-
-    async function searchSteam(raw, requestNumber) {
-      const target =
-        "https://store.steampowered.com/api/storesearch/?term=" +
-        encodeURIComponent(raw) +
-        "&l=turkish&cc=tr";
-
-      // Önce doğrudan Steam'i dene, sonra proxy üzerinden dene.
-      const urls = [
-        target,
-        "https://proxy.cors.dev/" + target,
-        "https://corsproxy.io/?url=" + encodeURIComponent(target)
-      ];
-
-      let lastError = null;
-
-      for (const url of urls) {
+    function chooseGame(name) { $("gameInput").value=name; $("suggestions").style.display="none"; $("gameInput").focus(); }
+    async function searchSteam(raw,requestNumber) {
+      const target="https://store.steampowered.com/api/storesearch/?term="+encodeURIComponent(raw)+"&l=turkish&cc=tr";
+      let lastError=null;
+      for(const url of [target,"https://proxy.cors.dev/"+target,"https://corsproxy.io/?url="+encodeURIComponent(target)]) {
         try {
-          const response = await fetch(url, {
-            method: "GET",
-            credentials: "omit"
-          });
-
-          if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-          }
-
-          const data = await response.json();
-
-          if (requestNumber !== searchRequest) return null;
-
-          if (!Array.isArray(data.items)) {
-            throw new Error("Beklenmeyen Steam yanıtı");
-          }
-
+          const response=await fetch(url,{method:"GET",credentials:"omit"});
+          if(!response.ok) throw new Error("HTTP "+response.status);
+          const data=await response.json(); if(requestNumber!==searchRequest) return null;
+          if(!Array.isArray(data.items)) throw new Error("Beklenmeyen Steam yanıtı");
           return data.items;
-        } catch (error) {
-          lastError = error;
-        }
+        } catch(error) { lastError=error; }
       }
-
-      throw lastError || new Error("Steam araması başarısız.");
+      throw lastError||new Error("Steam araması başarısız.");
     }
-
     async function showSuggestions() {
-      const raw = $("gameInput").value.trim();
-      const box = $("suggestions");
-      const query = normalize(raw);
-
-      if (!query) {
-        box.style.display = "none";
-        return;
-      }
-
-      const requestNumber = ++searchRequest;
-      box.replaceChildren();
-      box.style.display = "block";
-
-      const localMatches = [
-        ...new Map(
-          [...starterGames, ...entries.map(entry => entry.game)]
-            .filter(Boolean)
-            .map(name => [normalize(name), name])
-        ).values()
-      ].filter(name => normalize(name).includes(query)).slice(0, 6);
-
-      for (const name of localMatches) {
-        addChoice(box, name, chooseGame);
-      }
-
-      addChoice(box, "Steam oyunları aranıyor...", () => {}, true);
-
+      const raw=$("gameInput").value.trim(), box=$("suggestions"), query=normalize(raw);
+      if(!query) { box.style.display="none"; return; }
+      const requestNumber=++searchRequest; box.replaceChildren(); box.style.display="block";
+      const localMatches=[...new Map([...starterGames,...entries.map(e=>e.game)].filter(Boolean).map(n=>[normalize(n),n])).values()]
+        .filter(n=>normalize(n).includes(query)).slice(0,6);
+      for(const n of localMatches) addChoice(box,n,chooseGame);
+      addChoice(box,"Steam oyunları aranıyor...",()=>{},true);
       try {
-        const results = await searchSteam(raw, requestNumber);
-
-        if (requestNumber !== searchRequest || results === null) return;
-
-        box.replaceChildren();
-
-        const seen = new Set();
-
-        for (const item of results) {
-          if (!item || item.type !== "app" || !item.name || !item.id) {
-            continue;
-          }
-
-          const key = normalize(item.name);
-          if (seen.has(key)) continue;
-
-          seen.add(key);
-          addChoice(box, item.name, chooseGame);
-
-          if (seen.size >= 10) break;
+        const results=await searchSteam(raw,requestNumber); if(requestNumber!==searchRequest||results===null) return;
+        box.replaceChildren(); const seen=new Set();
+        for(const item of results) {
+          if(!item||item.type!=="app"||!item.name||!item.id) continue;
+          const key=normalize(item.name); if(seen.has(key)) continue; seen.add(key); addChoice(box,item.name,chooseGame);
+          if(seen.size>=10) break;
         }
-
-        const custom = document.createElement("button");
-        custom.type = "button";
-        custom.textContent = `＋ "${raw}" ismini kullan`;
-        custom.addEventListener("click", () => chooseGame(raw));
-        box.appendChild(custom);
-
-        if (seen.size === 0) {
-          addChoice(
-            box,
-            "Steam sonucu bulunamadı; adını elle yazabilirsin.",
-            () => {},
-            true
-          );
-        }
-      } catch (error) {
-        if (requestNumber !== searchRequest) return;
-
-        box.replaceChildren();
-
-        for (const name of localMatches) {
-          addChoice(box, name, chooseGame);
-        }
-
-        addChoice(box, `＋ "${raw}" ismini kullan`, () => chooseGame(raw));
-
-        addChoice(
-          box,
-          "Canlı Steam araması şu anda çalışmadı. Elle yazmaya devam edebilirsin.",
-          () => {},
-          true
-        );
-
-        console.warn("Steam arama hatası:", error);
+        addChoice(box,`＋ "${raw}" ismini kullan`,()=>chooseGame(raw));
+        if(!seen.size) addChoice(box,"Steam sonucu bulunamadı; adını elle yazabilirsin.",()=>{},true);
+      } catch(error) {
+        if(requestNumber!==searchRequest) return; box.replaceChildren();
+        for(const n of localMatches) addChoice(box,n,chooseGame);
+        addChoice(box,`＋ "${raw}" ismini kullan`,()=>chooseGame(raw));
+        addChoice(box,"Canlı Steam araması çalışmadı. Elle yazabilirsin.",()=>{},true);
+        console.warn("Steam arama hatası:",error);
       }
     }
 
-    $("gameInput").addEventListener("input", () => {
-      selectedGame = "";
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(showSuggestions, 350);
-    });
+    $("gameInput").addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(showSuggestions,350);});
+    $("gameInput").addEventListener("focus",()=>{if($("gameInput").value.trim()){clearTimeout(searchTimer);searchTimer=setTimeout(showSuggestions,150);}});
+    $("gameInput").addEventListener("keydown",e=>{if(e.key==="Escape") $("suggestions").style.display="none";});
+    document.addEventListener("click",e=>{if(!e.target.closest(".game-wrap")) $("suggestions").style.display="none";});
+    $("filterInput").addEventListener("input",render);
+    $("profileSearch").addEventListener("input",renderProfiles);
 
-    $("gameInput").addEventListener("focus", () => {
-      if ($("gameInput").value.trim()) {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(showSuggestions, 150);
-      }
-    });
-
-    $("gameInput").addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        $("suggestions").style.display = "none";
-      }
-    });
-
-    document.addEventListener("click", event => {
-      if (!event.target.closest(".game-wrap")) {
-        $("suggestions").style.display = "none";
-      }
-    });
-
-    $("filterInput").addEventListener("input", render);
-
-    $("suggestionForm").addEventListener("submit", async event => {
+    $("suggestionForm").addEventListener("submit",async event=>{
       event.preventDefault();
-
-      if (!currentUser) {
-        showNotice("Veritabanına bağlanılıyor. Biraz bekleyip tekrar dene.", "info");
-        return;
-      }
-
-      if (!databaseReady) {
-        showNotice("Öneriler henüz yüklenmedi. Biraz bekleyip tekrar dene.", "info");
-        return;
-      }
-
-      const game = $("gameInput").value.trim();
-      const person = $("personInput").value.trim();
-      const note = $("noteInput").value.trim();
-
-      if (!game || !person) {
-        showNotice("Oyun adını ve kullanıcı adını doldur.", "error");
-        return;
-      }
-
-      if (game.length > 100 || person.length > 40 || note.length > 100) {
-        showNotice("Bir veya daha fazla alan izin verilen uzunluğu aşıyor.", "error");
-        return;
-      }
-
-      const submitButton = $("submitButton");
-      submitButton.disabled = true;
-      submitButton.textContent = "Paylaşılıyor...";
-
+      if(!currentUser) {showNotice("Veritabanına bağlanılıyor. Biraz bekleyip tekrar dene.","info");return;}
+      if(!databaseReady) {showNotice("Öneriler henüz yüklenmedi. Biraz bekleyip tekrar dene.","info");return;}
+      const game=$("gameInput").value.trim(), person=$("personInput").value.trim(), note=$("noteInput").value.trim();
+      if(!game||!person) {showNotice("Oyun adını ve kullanıcı adını doldur.","error");return;}
+      if(game.length>100||person.length>40||note.length>100) {showNotice("Bir veya daha fazla alan izin verilen uzunluğu aşıyor.","error");return;}
+      const submit=$("submitButton"); submit.disabled=true; submit.textContent="Paylaşılıyor...";
       try {
-        const userEntriesRef = ref(db, "suggestions/" + currentUser.uid);
-        const newEntryRef = push(userEntriesRef);
-
-       await set(newEntryRef, {
-  game,
-  person,
-  note,
-  createdAt: new Date().toISOString()
-         
-        });
-
-        $("gameInput").value = "";
-        $("personInput").value = "";
-        $("noteInput").value = "";
-        selectedGame = "";
-        $("suggestions").style.display = "none";
-
-        showNotice("Önerin başarıyla paylaşıldı!", "success");
-      } catch (error) {
-        console.error("Öneri kaydetme hatası:", error);
-        showNotice(
-          "Öneri kaydedilemedi. Firebase Authentication ve Database Rules ayarlarını kontrol et. Hata: " +
-          error.message,
-          "error"
-        );
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = "Öneriyi paylaş";
-      }
+        const userEntriesRef=ref(db,"suggestions/"+currentUser.uid), newEntryRef=push(userEntriesRef);
+        await set(newEntryRef,{game,person,note,createdAt:new Date().toISOString(),createdAtMs:Date.now()});
+        await set(ref(db,`profiles/${currentUser.uid}`),{name:person,updatedAt:new Date().toISOString()});
+        $("gameInput").value=""; $("personInput").value=""; $("noteInput").value=""; $("suggestions").style.display="none";
+        showNotice("Önerin başarıyla paylaşıldı!","success");
+      } catch(error) {
+        console.error("Öneri kaydetme hatası:",error);
+        showNotice("Öneri kaydedilemedi. Firebase Rules ayarlarını kontrol et. Hata: "+error.message,"error");
+      } finally {submit.disabled=false;submit.textContent="Öneriyi paylaş";}
     });
 
-    // Anonim Firebase girişi ve ortak önerileri dinleme
     try {
-      const credential = await signInAnonymously(auth);
-      currentUser = credential.user;
-      console.log("YÖNETİCİ UID:", currentUser.uid);
-      onValue(
-        ref(db, "suggestions"),
-        snapshot => {
-          entries = [];
+      const credential=await signInAnonymously(auth); currentUser=credential.user;
+      console.log("Giriş UID:",currentUser.uid);
+      onValue(ref(db,"suggestions"),snapshot=>{
+        entries=[];
+        snapshot.forEach(userSnapshot=>userSnapshot.forEach(entrySnapshot=>{
+          const item=entrySnapshot.val();
+          if(item&&typeof item.game==="string"&&typeof item.person==="string") {
+            entries.push({game:item.game,person:item.person,note:typeof item.note==="string"?item.note:"",createdAt:item.createdAt||"",createdAtMs:Number(item.createdAtMs)||0,ownerUid:userSnapshot.key,entryId:entrySnapshot.key});
+          }
+        }));
+        databaseReady=true;setStatus("Ortak veritabanına bağlandı",true);render();renderProfiles();
+      },error=>{
+        console.error("Veri okuma hatası:",error);databaseReady=false;setStatus("Veriler yüklenemedi",false);
+        showNotice("Veriler yüklenemedi: "+error.message,"error");render();
+      });
 
-          snapshot.forEach(userSnapshot => {
-            userSnapshot.forEach(entrySnapshot => {
-              const item = entrySnapshot.val();
-
-              if (
-                item &&
-                typeof item.game === "string" &&
-                typeof item.person === "string"
-              ) {
-                
-entries.push({
-  game: item.game,
-  person: item.person,
-  note: typeof item.note === "string" ? item.note : "",
-  createdAt: item.createdAt || "",
-  createdAtMs: Number(item.createdAtMs) || 0,
-  ownerUid: userSnapshot.key,
-  entryId: entrySnapshot.key
-});
-
-                
-              }
-            });
-          });
-
-          databaseReady = true;
-          setStatus("Ortak veritabanına bağlandı", true);
-          render();
-        },
-        error => {
-          console.error("Veri okuma hatası:", error);
-          databaseReady = false;
-          setStatus("Veriler yüklenemedi", false);
-          showNotice("Veriler yüklenemedi: " + error.message, "error");
-          render();
-        }
-      );
-    } catch (error) {
-      console.error("Firebase giriş hatası:", error);
-      setStatus("Bağlantı hatası", false);
-      showNotice(
-        "Firebase anonim girişi başarısız. Authentication bölümünde Anonymous girişin açık olduğundan emin ol. Hata: " +
-        error.message,
-        "error"
-      );
+      onValue(ref(db,"gameVotes"),snap=>{votes=snap.val()||{};render();renderProfiles();},error=>console.error("Oylar okunamadı:",error));
+      onValue(ref(db,"gameComments"),snap=>{
+        comments=snap.val()||{};
+        for(const [key,list] of Object.entries(comments)) for(const [id,c] of Object.entries(list||{})) if(c) c.id=id;
+        render();renderProfiles();
+      },error=>console.error("Yorumlar okunamadı:",error));
+      onValue(ref(db,"profiles"),snap=>{profiles=snap.val()||{};render();renderProfiles();},error=>console.error("Profiller okunamadı:",error));
+    } catch(error) {
+      console.error("Firebase giriş hatası:",error);setStatus("Bağlantı hatası",false);
+      showNotice("Firebase anonim girişi başarısız. Authentication bölümünde Anonymous girişin açık olduğundan emin ol. Hata: "+error.message,"error");
     }
   </script>
 </body>
